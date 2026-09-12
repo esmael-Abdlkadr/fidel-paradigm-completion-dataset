@@ -8,7 +8,7 @@ The raw upload contains 600 dialects in 30 grouping families of 20 dialects each
 
 ## Release At A Glance
 
-- Raw files: 10
+- Raw files: 11
 - Dialects (cases): 600
 - Families (grouping keys): 30, with 20 dialects each
 - Lexemes per dialect: 40, each with a citation form
@@ -21,11 +21,12 @@ The raw upload contains 600 dialects in 30 grouping families of 20 dialects each
 
 ## Raw File Structure
 
-The uploaded ZIP is flat and contains exactly these ten files at its root:
+The uploaded ZIP is flat and contains exactly these eleven files at its root:
 
 - `languages.csv`: one record per dialect: `case_id` and its family key.
 - `lemmas.csv`: one record per lexeme: `case_id`, `lexeme_id`, `lemma` (the citation form, cell `PFV.3SG.M`, in fidel).
-- `forms.csv`: one record per attested form and per query: `case_id`, `lexeme_id`, `cell`, `form`, `role`. Attested records carry the surface form; query records have an empty `form` and are the cells to be predicted.
+- `attested_forms.csv`: one record per attested inflected form: `case_id`, `lexeme_id`, `cell`, `form`. Eighty records per dialect.
+- `query_cells.csv`: one record per cell to be completed: `case_id`, `lexeme_id`, `cell`. Eighty-four records per dialect. Attested forms and query cells are separate tables so that no column is ever empty.
 - `labels.csv`: one creator-side record per dialect: `case_id` and `answers_json`, a JSON object from query key `lexeme_id|cell` to the true surface form; used by `prepare.py` and never copied into public prepared data.
 - `source_metadata.json`: provenance, scale, cell inventory, seed policy and licence metadata.
 - `LICENSE`: CC BY 4.0 notice and licence URL.
@@ -47,12 +48,16 @@ The uploaded ZIP is flat and contains exactly these ten files at its root:
 - `lexeme_id` (string): opaque lexeme identifier, unique within a dialect, for example `lex_9a1c4e`.
 - `lemma` (string): the citation form in fidel, for example ሰበረ.
 
-### forms.csv
+### attested_forms.csv
 
 - `case_id` (string) and `lexeme_id` (string): as above.
 - `cell` (string): one of the 19 cell tags listed below.
-- `form` (string): the surface form in fidel for attested records; empty for query records.
-- `role` (string): `attested` or `query`.
+- `form` (string): the attested surface form in fidel.
+
+### query_cells.csv
+
+- `case_id` (string) and `lexeme_id` (string): as above.
+- `cell` (string): the cell whose form is to be predicted. A query is never an attested pair and never the citation cell.
 
 ### labels.csv
 
@@ -61,11 +66,11 @@ The uploaded ZIP is flat and contains exactly these ten files at its root:
 
 Cell tags: `PFV.3SG.M` (the citation cell), `PFV.3SG.F`, `PFV.1SG`, `PFV.3PL`, `IPFV.3SG.M`, `IPFV.1SG`, `IPFV.1PL`, `IPFV.2SG.F`, `IPFV.3PL`, `JUS.3SG.M`, `INF`, `GER.3SG.M`, `AGN`, `INS`, `NEG.PFV.3SG.M`, `IMP.2SG.M`, `VN`, `PASS.PFV.3SG.M`, `CAUS.PFV.3SG.M`.
 
-Example records from `forms.csv`:
+Example records, one from each table:
 
 ```text
-lang_3f9c1a7b2e,lex_9a1c4e,IPFV.3SG.M,ይሰብር,attested
-lang_3f9c1a7b2e,lex_9a1c4e,AGN,,query
+attested_forms.csv:  lang_3f9c1a7b2e,lex_9a1c4e,IPFV.3SG.M,ይሰብር
+query_cells.csv:     lang_3f9c1a7b2e,lex_9a1c4e,AGN
 ```
 
 ## How The Data Is Generated
