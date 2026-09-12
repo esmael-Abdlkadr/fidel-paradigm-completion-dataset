@@ -64,7 +64,7 @@ The uploaded ZIP is flat and contains exactly these eleven files at its root:
 - `case_id` (string): joins to the other tables.
 - `answers_json` (JSON object string): query key `lexeme_id|cell` to the true form of every query record of that dialect.
 
-Cell tags: `PFV.3SG.M` (the citation cell), `PFV.3SG.F`, `PFV.1SG`, `PFV.3PL`, `IPFV.3SG.M`, `IPFV.1SG`, `IPFV.1PL`, `IPFV.2SG.F`, `IPFV.3PL`, `JUS.3SG.M`, `INF`, `GER.3SG.M`, `AGN`, `INS`, `NEG.PFV.3SG.M`, `IMP.2SG.M`, `VN`, `PASS.PFV.3SG.M`, `CAUS.PFV.3SG.M`.
+Cell tags: `PFV.3SG.M` (the citation cell), `PFV.3SG.F`, `PFV.1SG`, `PFV.3PL`, `IPFV.3SG.M`, `IPFV.1SG`, `IPFV.1PL`, `IPFV.2SG.F`, `IPFV.3PL`, `JUS.3SG.M`, `INFIN`, `GER.3SG.M`, `AGN`, `INS`, `NEG.PFV.3SG.M`, `IMP.2SG.M`, `VN`, `PASS.PFV.3SG.M`, `CAUS.PFV.3SG.M`.
 
 Example records, one from each table:
 
