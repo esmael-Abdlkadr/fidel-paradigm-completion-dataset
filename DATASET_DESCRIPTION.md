@@ -4,7 +4,7 @@
 
 This is an original, fully synthetic dataset of 600 invented Ethio-Semitic dialects with hidden templatic (root-and-pattern) morphology, written in the Ethiopic fidel syllabary. Each dialect has its own hidden consonantal roots, vowel templates, affixes and sound rules, all drawn from menus modelled on Amharic verb morphology. The dataset contains no natural-language corpus, no real lexicon, no user data and no third-party records; every string was produced by the generator described below.
 
-The raw upload contains 600 dialects in 30 grouping families of 20 dialects each. Every dialect has 40 lexemes, 19 grammatical cells, 80 attested inflected forms and 84 query cells whose forms are the labels.
+The raw upload contains 600 dialects in 30 grouping families of 20 dialects each. Every dialect has 40 lexemes, 19 grammatical cells, 80 attested inflected forms and 84 query cells. The labels are the forms of the query cells, the hidden root of every lexeme, and the set of sound rules active in the dialect.
 
 ## Release At A Glance
 
@@ -27,8 +27,8 @@ The uploaded ZIP is flat and contains exactly these eleven files at its root:
 - `lemmas.csv`: one record per lexeme: `case_id`, `lexeme_id`, `lemma` (the citation form, cell `PFV.3SG.M`, in fidel).
 - `attested_forms.csv`: one record per attested inflected form: `case_id`, `lexeme_id`, `cell`, `form`. Eighty records per dialect.
 - `query_cells.csv`: one record per cell to be completed: `case_id`, `lexeme_id`, `cell`. Eighty-four records per dialect. Attested forms and query cells are separate tables so that no column is ever empty.
-- `labels.csv`: one creator-side record per dialect: `case_id` and `answers_json`, a JSON object from query key `lexeme_id|cell` to the true surface form; used by `prepare.py` and never copied into public prepared data.
-- `source_metadata.json`: provenance, scale, cell inventory, seed policy and licence metadata.
+- `labels.csv`: one creator-side record per dialect: `case_id`, `answers_json` (JSON object from query key `lexeme_id|cell` to the true surface form), `roots_json` (JSON object from `lexeme_id` to the hidden root, written as its three consonants in the vowelless sixth order, for example ስብር for s-b-r) and `rules_json` (JSON array of the active rule names); used by `prepare.py` and never copied into public prepared data.
+- `source_metadata.json`: provenance, scale, cell inventory, rule-name inventory, seed policy and licence metadata.
 - `LICENSE`: CC BY 4.0 notice and licence URL.
 - `ATTRIBUTION.txt`: attribution text.
 - `DATASET_CARD.md`: short scope and safety summary.
@@ -63,6 +63,8 @@ The uploaded ZIP is flat and contains exactly these eleven files at its root:
 
 - `case_id` (string): joins to the other tables.
 - `answers_json` (JSON object string): query key `lexeme_id|cell` to the true form of every query record of that dialect.
+- `roots_json` (JSON object string): `lexeme_id` to the hidden three-consonant root of every lexeme, as three vowelless fidel glyphs.
+- `rules_json` (JSON array string): the rule names active in the dialect, from `glide_fusion`, `palatalisation`, `nasal_assimilation`, `prefix_alternation`, `final_raising`.
 
 Cell tags: `PFV.3SG.M` (the citation cell), `PFV.3SG.F`, `PFV.1SG`, `PFV.3PL`, `IPFV.3SG.M`, `IPFV.1SG`, `IPFV.1PL`, `IPFV.2SG.F`, `IPFV.3PL`, `JUS.3SG.M`, `INFIN`, `GER.3SG.M`, `AGN`, `INS`, `NEG.PFV.3SG.M`, `IMP.2SG.M`, `VN`, `PASS.PFV.3SG.M`, `CAUS.PFV.3SG.M`.
 
@@ -85,16 +87,17 @@ All randomness, every `case_id`, `family_id` and `lexeme_id`, and every grammar 
 
 - public `train.csv` (480 rows): `case_id`, `family_id`, `lemmas_json` (object of `lexeme_id` to citation form), `attested_json` (array of `[lexeme_id, cell, form]`), `queries_json` (array of `[lexeme_id, cell]`).
 - public `test.csv` (120 rows): the same columns for the held-out dialects.
-- public `train_labels.csv` (480 rows): `case_id` and `prediction_json`, the true forms of the training queries in the submission format.
-- public `sample_submission.csv` (120 rows): `case_id` and `prediction_json`, every query answered with its lexeme's citation form; valid and weak.
-- private `answers.csv` (120 rows): `case_id` and `prediction_json`, the true forms of the test queries plus a reserved `__case_ids__` field listing the test dialects. It has the same columns as `sample_submission.csv`, and the grader ignores reserved fields, so the answer key is itself a perfect submission.
+- public `train_labels.csv` (480 rows): `case_id` and `prediction_json`, a JSON object with `forms` (the true forms of the training queries), `roots` (the hidden root of every lexeme) and `rules` (the active rule names), in the submission format.
+- public `sample_submission.csv` (120 rows): `case_id` and `prediction_json`, with every query answered by its lexeme's citation form, every root read off the citation form's consonants, and no rules claimed; valid and weak.
+- private `answers.csv` (120 rows): `case_id` and `prediction_json`, the true forms, roots and rules of the test dialects plus a reserved `__case_ids__` field listing the test dialects. It has the same columns as `sample_submission.csv`, and the grader ignores reserved fields, so the answer key is itself a perfect submission.
 
 The public directory also holds `LICENSE`; no other raw document is copied into it, so nothing a solver receives names the dataset or its author. The 19 cell tags are fixed and stated here rather than repeated per row.
 
 ## Characteristics
 
 - Each dialect has its own grammar and roots, so nothing memorised from one dialect transfers as a lookup; what transfers is the space of templates, affixes and rules.
-- About half of the queries involve a lexeme with a glide radical, where the citation form has already fused the glide into a vowel and the radical must be reconstructed before the target cell can be built.
+- About half of the queries involve a lexeme with a glide radical, and 21% of all lexemes have a citation form in which the glide has fused into a vowel, so reading the root off the citation consonants is wrong for them and the radical must be reconstructed from the fused vowel.
+- Not every active rule leaves a trace in a dialect's released forms: glide fusion and prefix alternation always do, final raising in 72% of dialects, palatalisation in 51%, nasal assimilation in 18%. A rule with no trace cannot be identified from the evidence.
 - Rule effects are conditioned on radical identity or natural class, so a query can require evidence from other lexemes of the same class.
 - The family keys support leak-free group-held-out splits: no family occurs in both prepared splits.
 
@@ -103,7 +106,7 @@ The public directory also holds `LICENSE`; no other raw document is copied into 
 - **Fully synthetic; no real-language validity.** The templates, affixes and rules are modelled on Amharic verb morphology but every dialect is invented. Methods that work here do not constitute results about any real Ethio-Semitic language.
 - **Menus are finite.** Every dialect draws from the same menus of templates, affixes and rules, so the hypothesis space is learnable from the training dialects. The held-out split tests induction of unseen dialects, not generalisation to unseen kinds of morphology.
 - **Uniform dialect shape.** Every dialect has 40 lexemes, 19 cells, 80 attested forms and 84 queries. Solutions are never tested on larger or ragged lexica.
-- **Irregular cells are unpredictable by construction.** Six percent of lexeme-cells use a different template than their dialect; the oracle that knows every grammar scores 97.64, not 1.
+- **Irregular cells and untraceable rules are unpredictable by construction.** Six percent of lexeme-cells use a different template than their dialect, and some active rules leave no trace in the released forms; the oracle that knows every grammar scores 98.59, and the same oracle claiming only traceable rules scores 95.28, not 100.
 - **Gemination is unwritten.** As in Ethiopic orthography, consonant length is not represented, so the surface forms carry less information than a phonemic transcription would.
 - **Reproducibility is restricted by design.** The generator is public, but the released data can be regenerated only with the withheld secret. Anyone auditing the generator can run it with their own secret to obtain a statistically equivalent dataset, not this one.
 
