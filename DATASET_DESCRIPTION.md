@@ -89,7 +89,7 @@ All randomness, every `case_id`, `family_id` and `lexeme_id`, and every grammar 
 - public `test.csv` (120 rows): the same columns for the held-out dialects.
 - public `train_labels.csv` (480 rows): `case_id` and `prediction_json`, a JSON object with `forms` (the true forms of the training queries), `roots` (the hidden root of every lexeme) and `rules` (the active rule names), in the submission format.
 - public `sample_submission.csv` (120 rows): `case_id` and `prediction_json`, with every query answered by its lexeme's citation form, every root read off the citation form's consonants, and no rules claimed; valid and weak.
-- private `answers.csv` (120 rows): `case_id` and `prediction_json`, the true forms, roots and rules of the test dialects plus a reserved `__case_ids__` field listing the test dialects. It has the same columns as `sample_submission.csv`, and the grader ignores reserved fields, so the answer key is itself a perfect submission.
+- private `answers.csv` (120 rows): `case_id` and `prediction_json`, the true roots, rules and forms of the test dialects, a `fused` list naming the lexemes whose citation form hides a radical, and a reserved `__case_ids__` field listing the test dialects. It has the same columns as `sample_submission.csv`, and the grader ignores reserved fields, so the answer key is itself a perfect submission.
 
 The public directory also holds `LICENSE`; no other raw document is copied into it, so nothing a solver receives names the dataset or its author. The 19 cell tags are fixed and stated here rather than repeated per row.
 
@@ -106,7 +106,7 @@ The public directory also holds `LICENSE`; no other raw document is copied into 
 - **Fully synthetic; no real-language validity.** The templates, affixes and rules are modelled on Amharic verb morphology but every dialect is invented. Methods that work here do not constitute results about any real Ethio-Semitic language.
 - **Menus are finite.** Every dialect draws from the same menus of templates, affixes and rules, so the hypothesis space is learnable from the training dialects. The held-out split tests induction of unseen dialects, not generalisation to unseen kinds of morphology.
 - **Uniform dialect shape.** Every dialect has 40 lexemes, 19 cells, 80 attested forms and 84 queries. Solutions are never tested on larger or ragged lexica.
-- **Irregular cells and untraceable rules are unpredictable by construction.** Six percent of lexeme-cells use a different template than their dialect, and some active rules leave no trace in the released forms; the oracle that knows every grammar scores 98.59, and the same oracle claiming only traceable rules scores 95.28, not 100.
+- **Irregular cells and untraceable rules are unpredictable by construction.** Six percent of lexeme-cells use a different template than their dialect, and an active rule that leaves no trace in a dialect's released forms cannot be identified from them. Both put a ceiling below a perfect score, quantified in the challenge description.
 - **Gemination is unwritten.** As in Ethiopic orthography, consonant length is not represented, so the surface forms carry less information than a phonemic transcription would.
 - **Reproducibility is restricted by design.** The generator is public, but the released data can be regenerated only with the withheld secret. Anyone auditing the generator can run it with their own secret to obtain a statistically equivalent dataset, not this one.
 
