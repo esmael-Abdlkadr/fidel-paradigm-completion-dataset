@@ -1,10 +1,10 @@
-# Fidel Paradigm Completion Dataset
+# Fidel Orthographic Inversion Dataset
 
 ## Overview
 
 This is an original, fully synthetic dataset of 600 invented Ethio-Semitic dialects with hidden templatic (root-and-pattern) morphology, written in the Ethiopic fidel syllabary. Each dialect has its own hidden consonantal roots, vowel templates, affixes and sound rules, all drawn from menus modelled on Amharic verb morphology. The dataset contains no natural-language corpus, no real lexicon, no user data and no third-party records; every string was produced by the generator described below.
 
-The raw upload contains 600 dialects in 30 grouping families of 20 dialects each. Every dialect has 40 lexemes, 19 grammatical cells, 80 attested inflected forms and 84 query cells. The labels are the forms of the query cells, the hidden root of every lexeme, and the set of sound rules active in the dialect.
+The raw upload contains 600 dialects in 30 grouping families of 20 dialects each. Every dialect has 40 lexemes, 19 grammatical cells, 80 attested inflected forms and 84 query cells. The labels are the hidden root of every lexeme, the set of sound rules active in the dialect, each active rule's dialect-specific setting, and the forms of the query cells.
 
 ## Release At A Glance
 
@@ -27,7 +27,7 @@ The uploaded ZIP is flat and contains exactly these eleven files at its root:
 - `lemmas.csv`: one record per lexeme: `case_id`, `lexeme_id`, `lemma` (the citation form, cell `PFV.3SG.M`, in fidel).
 - `attested_forms.csv`: one record per attested inflected form: `case_id`, `lexeme_id`, `cell`, `form`. Eighty records per dialect.
 - `query_cells.csv`: one record per cell to be completed: `case_id`, `lexeme_id`, `cell`. Eighty-four records per dialect. Attested forms and query cells are separate tables so that no column is ever empty.
-- `labels.csv`: one creator-side record per dialect: `case_id`, `answers_json` (JSON object from query key `lexeme_id|cell` to the true surface form), `roots_json` (JSON object from `lexeme_id` to the hidden root, written as its three consonants in the vowelless sixth order, for example ስብር for s-b-r) and `rules_json` (JSON array of the active rule names); used by `prepare.py` and never copied into public prepared data.
+- `labels.csv`: one creator-side record per dialect: `case_id`, `answers_json` (JSON object from query key `lexeme_id|cell` to the true surface form), `roots_json` (JSON object from `lexeme_id` to the hidden root, written as its three consonants in the vowelless sixth order, for example ስብር for s-b-r), `rules_json` (JSON array of the active rule names) and `parameters_json` (JSON object from each active rule to its dialect-specific setting); used by `prepare.py` and never copied into public prepared data.
 - `source_metadata.json`: provenance, scale, cell inventory, rule-name inventory, seed policy and licence metadata.
 - `LICENSE`: CC BY 4.0 notice and licence URL.
 - `ATTRIBUTION.txt`: attribution text.
@@ -65,6 +65,7 @@ The uploaded ZIP is flat and contains exactly these eleven files at its root:
 - `answers_json` (JSON object string): query key `lexeme_id|cell` to the true form of every query record of that dialect.
 - `roots_json` (JSON object string): `lexeme_id` to the hidden three-consonant root of every lexeme, as three vowelless fidel glyphs.
 - `rules_json` (JSON array string): the rule names active in the dialect, from `glide_fusion`, `palatalisation`, `nasal_assimilation`, `prefix_alternation`, `final_raising`.
+- `parameters_json` (JSON object string): each active rule mapped to its setting. The menus are `glide_fusion` one of `o+e`, `o+i`, `u+e`, `u+i`; `palatalisation` one of `i`, `e`, `i+e`; `nasal_assimilation` one of `b`, `b+m`, `b+m+f`; `prefix_alternation` one of `sonorants`, `sibilants`, `dorsals`, `labials`, `coronals`; `final_raising` one of `first_order`, `fourth_order`.
 
 Cell tags: `PFV.3SG.M` (the citation cell), `PFV.3SG.F`, `PFV.1SG`, `PFV.3PL`, `IPFV.3SG.M`, `IPFV.1SG`, `IPFV.1PL`, `IPFV.2SG.F`, `IPFV.3PL`, `JUS.3SG.M`, `INFIN`, `GER.3SG.M`, `AGN`, `INS`, `NEG.PFV.3SG.M`, `IMP.2SG.M`, `VN`, `PASS.PFV.3SG.M`, `CAUS.PFV.3SG.M`.
 
@@ -77,7 +78,7 @@ query_cells.csv:     lang_3f9c1a7b2e,lex_9a1c4e,AGN
 
 ## How The Data Is Generated
 
-Each dialect draws a grammar: for every cell a vowel template over the three radicals from a small menu (the perfective-family cells share one template, the imperfective cells share another), an optional prefix and suffix from per-cell menus, and a set of two to four sound rules from a pool of five. The rules are fusion of a glide radical (w or y) with an adjacent vowel into a rounded or front vowel, palatalisation of a final radical before a front-vowel suffix, assimilation of a prefix nasal to a labial first radical, a prefix-vowel change before a natural class of first radicals (sonorants, sibilants, dorsals, labials or coronals), and raising of a stem-final low vowel when no suffix follows. Each rule has dialect-specific parameters. Forty roots are then sampled from twenty consonant series, with a third of them forced to contain a glide radical in addition to the glides that occur by chance, and every cell of every lexeme is inflected. Six percent of non-citation lexeme-cells are made irregular by drawing a different template. Eighty attested forms and 60 query cells are sampled from the lexemes that keep their citation form, and three further query cells are drawn for each of eight lexemes whose other forms are withheld entirely.
+Each dialect draws a grammar, and every active sound rule carries one setting from a small menu, which is part of the released labels. For every cell a vowel template over the three radicals is drawn from a small menu (the perfective-family cells share one template, the imperfective cells share another), an optional prefix and suffix from per-cell menus, and a set of two to four sound rules from a pool of five. The rules are fusion of a glide radical (w or y) with an adjacent vowel into a rounded or front vowel, palatalisation of a final radical before a front-vowel suffix, assimilation of a prefix nasal to a labial first radical, a prefix-vowel change before a natural class of first radicals (sonorants, sibilants, dorsals, labials or coronals), and raising of a stem-final low vowel when no suffix follows. Each rule has dialect-specific parameters. Forty roots are then sampled from twenty consonant series, with a third of them forced to contain a glide radical in addition to the glides that occur by chance, and every cell of every lexeme is inflected. Six percent of non-citation lexeme-cells are made irregular by drawing a different template. Eighty attested forms and 60 query cells are sampled from the lexemes that keep their citation form, and three further query cells are drawn for each of eight lexemes whose other forms are withheld entirely.
 
 All randomness, every `case_id`, `family_id` and `lexeme_id`, and every grammar is derived by HMAC-SHA256 from a 256-bit secret held by the creator. The public generator code requires that secret and refuses to run without it, and the secret appears in no released file, in the source repository or in its history. Dialects are written in hashed-id order, so file order carries no generator index.
 
@@ -87,9 +88,9 @@ All randomness, every `case_id`, `family_id` and `lexeme_id`, and every grammar 
 
 - public `train.csv` (480 rows): `case_id`, `family_id`, `lemmas_json` (object of `lexeme_id` to citation form), `attested_json` (array of `[lexeme_id, cell, form]`), `queries_json` (array of `[lexeme_id, cell]`).
 - public `test.csv` (120 rows): the same columns for the held-out dialects.
-- public `train_labels.csv` (480 rows): `case_id` and `prediction_json`, a JSON object with `forms` (the true forms of the training queries), `roots` (the hidden root of every lexeme) and `rules` (the active rule names), in the submission format.
-- public `sample_submission.csv` (120 rows): `case_id` and `prediction_json`, with every query answered by its lexeme's citation form, every root read off the citation form's consonants, and no rules claimed; valid and weak.
-- private `answers.csv` (120 rows): `case_id` and `prediction_json`, the true roots, rules and forms of the test dialects, a `fused` list naming the lexemes whose citation form hides a radical, and a reserved `__case_ids__` field listing the test dialects. It has the same columns as `sample_submission.csv`, and the grader ignores reserved fields, so the answer key is itself a perfect submission.
+- public `train_labels.csv` (480 rows): `case_id` and `prediction_json`, a JSON object with `roots` (the hidden root of every lexeme), `rules` (the active rule names), `parameters` (each active rule's setting) and `forms` (the true forms of the training queries), in the submission format.
+- public `sample_submission.csv` (120 rows): `case_id` and `prediction_json`, with every root read off the citation form's consonants, no rule or setting forecast offered, and every query answered by its lexeme's citation form; valid and weak.
+- private `answers.csv` (120 rows): `case_id` and `prediction_json`, the true roots, rules, parameters and forms of the test dialects, a `fused` list naming the lexemes whose citation form hides a radical, and a reserved `__case_ids__` field listing the test dialects. It has the same columns as `sample_submission.csv`, and the grader ignores reserved fields, so the answer key is itself a perfect submission.
 
 The public directory also holds `LICENSE`; no other raw document is copied into it, so nothing a solver receives names the dataset or its author. The 19 cell tags are fixed and stated here rather than repeated per row.
 
@@ -112,4 +113,4 @@ The public directory also holds `LICENSE`; no other raw document is copied into 
 
 ## Provenance And License
 
-All records are generated by an original deterministic synthetic generator written for this dataset. The package is released under Creative Commons Attribution 4.0 International (CC BY 4.0). Attribution: Esmael Abdlkadr, *Fidel Paradigm Completion Dataset* (2026).
+All records are generated by an original deterministic synthetic generator written for this dataset. The package is released under Creative Commons Attribution 4.0 International (CC BY 4.0). Attribution: Esmael Abdlkadr, *Fidel Orthographic Inversion Dataset* (2026).
